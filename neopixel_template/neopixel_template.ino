@@ -8,6 +8,7 @@
 //
 // This example shows how to use neopixels. 
 // Use as a template for other neopixel projects.
+// Uses Adafruit Neopixel v1.12.2 library
 //
 //----------------------------------------------------------------//
 
@@ -18,7 +19,7 @@
 #define LED_PIN 5
 
 // How many neopixels are there?
-#define LED_COUNT 12
+#define LED_COUNT 10
 
 // Create neopixel strip.
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
@@ -58,14 +59,6 @@ void rainbow(int wait) {
     // strip.rainbow(firstPixelHue, 1, 255, 255, true);
     strip.show(); // Update strip with new contents
     delay(wait);  // Pause for a moment
-  }
-}
-
-void colorWipe(uint32_t color, int wait) {
-  for(int i=0; i<strip.numPixels(); i++) { // For each pixel in strip...
-    strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(wait);                           //  Pause for a moment
   }
 }
 
