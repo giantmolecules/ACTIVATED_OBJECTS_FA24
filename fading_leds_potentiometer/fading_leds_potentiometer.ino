@@ -79,8 +79,8 @@ void loop() {
   tft.print("ADC:");
   tft.print(value);
   tft.println("  ");
-  tft.print("PIN:");
-  tft.print(index);
+  tft.print("LED:");
+  tft.print(index+1);
   tft.println("  ");
 
   digitalWrite(pins[index], HIGH);
