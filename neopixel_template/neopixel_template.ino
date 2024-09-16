@@ -1,10 +1,29 @@
+//----------------------------------------------------------------//
+//
+// SAIC Activated Objects Fall 2024
+// Brett Ian Balogh
+// https://github.com/giantmolecules/ACTIVATED_OBJECTS_FA24
+//
+// neopixel_template.ino
+//
+// This example shows how to use neopixels. 
+// Use as a template for other neopixel projects.
+//
+//----------------------------------------------------------------//
+
+// Required Libraries
 #include <Adafruit_NeoPixel.h>
 
+// Which pin are the neopixels connected to
 #define LED_PIN 5
 
+// How many neopixels are there?
 #define LED_COUNT 12
 
+// Create neopixel strip.
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
+
+//----{SETUP}-----------------------------------------------------//
 
 void setup() {
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
@@ -12,6 +31,8 @@ void setup() {
   strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
 
 }
+
+//----{LOOP}------------------------------------------------------//
 
 void loop() {
 
@@ -47,3 +68,6 @@ void colorWipe(uint32_t color, int wait) {
     delay(wait);                           //  Pause for a moment
   }
 }
+
+//----{END}------------------------------------------------------//
+
