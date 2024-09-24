@@ -38,7 +38,7 @@ void setup() {
   delay(10);
 
   // initialize TFT
-  tft.init(135, 240); // Init ST7789 240x135
+  tft.init(135, 240);  // Init ST7789 240x135
   tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
 
@@ -51,7 +51,6 @@ void setup() {
   Serial.println(F("TFT Initialized"));
 
   pinMode(5, INPUT);
-
 }
 
 //----{LOOP}------------------------------------------------------//
@@ -59,15 +58,17 @@ void setup() {
 void loop() {
 
   int analogValue = analogRead(ANALOG_PIN);
-  
-  tft.setCursor(0,0);
+
+  tft.setCursor(0, 0);
   tft.print(analogValue);
   tft.println("    ");
   Serial.print(analogValue);
   Serial.print("  ");
-  int scaledValue = map(analogValue, 0, 8191, 0, 255); // map larger range on smaller one
-
-  analogWrite(LED_PIN, scaledValue); // write value to channel
+  // Fulls scale
+  //int scaledValue = map(analogValue, 0, 8191, 0, 255);  // map larger range on smaller one
+  // Try different scales
+  int scaledValue = map(analogValue, 1000, 6000, 0, 255);  // map larger range on smaller one
+  analogWrite(LED_PIN, scaledValue);                    // write value to channel
 
   tft.print(scaledValue);
   tft.println("    ");
