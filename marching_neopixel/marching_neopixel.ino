@@ -43,6 +43,7 @@ void loop() {
 
   //This is a test. This is only a test.
   for (int i = 0 ; i < 10; i++) {
+    // Print in for loop
     Serial.println("For Loop");
     // (N, R, G, B, W) all 0-255
     strip.setPixelColor(i, 255, 0, 255, 0);
@@ -55,7 +56,7 @@ void loop() {
     // Display the change
     strip.show();
   }
-
+  // Print in main loop
   Serial.println("Main Loop");
 
 }
