@@ -18,9 +18,8 @@
 // Create a TFT object
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-const int freq = 5000;
-const int ledChannel = 0;
-const int resolution = 8; // 8 -> 255
+const int ANALOG_PIN = 17;
+const int LED_PIN = 6;
 
 //----{SETUP}-----------------------------------------------------//
 
@@ -53,22 +52,20 @@ void setup() {
 
   pinMode(5, INPUT);
 
-  ledcSetup(ledChannel, freq, resolution);
-  ledcAttachPin(6, ledChannel);
 }
 
 //----{LOOP}------------------------------------------------------//
 
 void loop() {
 
-  int analogValue = analogRead(5);
+  int analogValue = analogRead(ANALOG_PIN);
   
   tft.setCursor(0,0);
   tft.println(analogValue);
 
-  int scaledValue = map(analogValue, 0, 4095, 0, 255); // map larger range on smaller one
+  int scaledValue = map(analogValue, 0, 8192, 0, 255); // map larger range on smaller one
 
-  ledcWrite(ledChannel, scaledValue); // write value to channel
+  analogWrite(LED_PIN, scaledValue); // write value to channel
 
   tft.println(scaledValue);
 }
