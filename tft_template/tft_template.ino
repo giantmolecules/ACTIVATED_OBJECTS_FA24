@@ -38,7 +38,10 @@ void setup() {
   tft.init(135, 240); // Init ST7789 240x135
   tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
-  
+
+  // Turn off word wrapping
+  tft.setTextWrap(false);
+
   // default text size
   tft.setTextSize(1);
   
