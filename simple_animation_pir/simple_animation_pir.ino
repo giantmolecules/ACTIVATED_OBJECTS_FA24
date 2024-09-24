@@ -16,6 +16,11 @@
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+// Flag
+bool draw = false;
+bool image = 0;
+bool toggle = 0;
+
 // 'smile', 240x135px
 const unsigned char epd_bitmap_smile[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -543,9 +548,13 @@ const unsigned char* epd_bitmap_allArray[2] = {
 void setup() {
   Serial.begin(115200);
 
+  // Pin modes
+  pinMode(9, INPUT);
+
   // Attach interrupts
-  attachInterrupt(9, isr_rising, RISING);
-  attachInterrupt(9, isr_falling, FALLING);
+  attachInterrupt(9, isr_rising, HIGH);
+  attachInterrupt(9, isr_falling, LOW);
+  //attachInterrupt(9, isr_change, CHANGE);
 
   Serial.print(F("Hello! Feather TFT Test"));
 
@@ -564,20 +573,45 @@ void setup() {
   tft.fillScreen(ST77XX_BLACK);
 
   Serial.println(F("Initialized"));
+
+  tft.drawBitmap(0, 0, epd_bitmap_frown, 240, 135, 0xfeac, 0x00);
 }
 
 //----{LOOP}------------------------------------------------------//
 
 void loop() {
+  if (draw == 1) {
+    if (image == 1) {
+      tft.drawBitmap(0, 0, epd_bitmap_smile, 240, 135, 0xfeac, 0x00);
+      draw = false;
+    }
+    if (image == 0) {
+      tft.drawBitmap(0, 0, epd_bitmap_frown, 240, 135, 0xfeac, 0x00);
+      draw = false;
+    }
+  }
 }
 //----{LOOP}------------------------------------------------------//
 
 void isr_rising() {
-  tft.drawBitmap(0, 0, epd_bitmap_smile, 240, 135, 0xfeac, 0x00);
+  //tft.drawBitmap(0, 0, epd_bitmap_frown, 240, 135, 0xfeac, 0x00);
+  draw = 1;
+  image = 0;
 }
 
-void isr_falling {
-  tft.drawBitmap(0, 0, epd_bitmap_frown, 240, 135, 0xfeac, 0x00);
+void isr_falling() {
+  //tft.drawBitmap(0, 0, epd_bitmap_smile, 240, 135, 0xfeac, 0x00);
+  draw = 1;
+  image = 1;
+}
+
+void isr_change() {
+  draw = true;
+  if (image == 0) {
+    image = 1;
+  } else {
+    image = 0;
+  }
 }
 
 //----{END}------------------------------------------------------//
