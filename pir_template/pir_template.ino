@@ -7,7 +7,7 @@
 // pir_template.ino
 //
 // Demonstrates the use of a passive infrared sensor (PIR). Uses
-// interrupts
+// interrupts. Uses board version 2.0.14 and GFX version 1.11.10
 //
 //----------------------------------------------------------------//
 
@@ -19,6 +19,9 @@
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+boolean event = false;
+boolean change = false;
+
 //----{SETUP}-----------------------------------------------------//
 
 void setup() {
@@ -28,8 +31,7 @@ void setup() {
   pinMode(INTERRUPT_PIN, INPUT);
 
   // Attach interrupts
-  attachInterrupt(INTERRUPT_PIN, isr_rising, HIGH);
-  attachInterrupt(INTERRUPT_PIN, isr_falling, LOW);
+  attachInterrupt(INTERRUPT_PIN, isr_change, CHANGE);
 
   // turn on backlite
   pinMode(TFT_BACKLITE, OUTPUT);
@@ -44,29 +46,47 @@ void setup() {
   tft.init(135, 240);  // Init ST7789 240x135
   tft.setRotation(3);
   tft.fillScreen(ST77XX_BLACK);
+
+  // Turn off word wrapping
   tft.setTextWrap(false);
 
+  // default text size
+  tft.setTextSize(4);
+
+  // set text foreground and background colors
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
 }
 
 //----{LOOP}------------------------------------------------------//
 
 void loop() {
+  if (event) {
+    if (change) {
+      tft.fillScreen(ST77XX_BLACK);
+      tft.setCursor(0, 0);
+      tft.println("Motion ");
+      tft.print("Detected!");
+      delay(2000);
+      change = false;
+    }
 
-// Nothing to do here. Interrupts handle everything.
-
+    if (!change) {
+      tft.fillScreen(ST77XX_BLACK);
+      tft.setCursor(0, 0);
+      tft.println("No");
+      tft.print("Motion...");
+      //change = false;
+    }
+    event = false;
+  }
 }
 //----{ISR}------------------------------------------------------//
 
-void isr_rising() {
-  tft.setCursor(0,0);
-  tft.println("Motion ");
-  tft.print("Detected!");
-}
+void isr_change() {
 
-void isr_falling() {
-  tft.setCursor(0,0);
-  tft.println("No");
-  tft.print("Motion...");
+  event = true;
+  change = true;
+
 }
 
 //----{END}------------------------------------------------------//

@@ -43,7 +43,7 @@ void setup() {
   tft.setTextWrap(false);
 
   // default text size
-  tft.setTextSize(1);
+  tft.setTextSize(4);
   
   // set text foreground and background colors
   tft.setTextColor(ST77XX_WHITE,ST77XX_BLACK);
