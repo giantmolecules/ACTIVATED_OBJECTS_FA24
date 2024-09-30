@@ -19,8 +19,7 @@
 
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-boolean event = false;
-boolean change = false;
+bool currentState = false;
 
 //----{SETUP}-----------------------------------------------------//
 
@@ -55,37 +54,53 @@ void setup() {
 
   // set text foreground and background colors
   tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+
+  // Start message
+  tft.print("Ready...");
 }
 
 //----{LOOP}------------------------------------------------------//
 
 void loop() {
-  if (event) {
-    if (change) {
-      tft.fillScreen(ST77XX_BLACK);
+
+  // Initialize variable to save previous state.
+  bool previousState = false;
+
+  // If the state has changed...
+  if (currentState != previousState) {
+
+    // Clear the screen.
+    tft.fillScreen(ST77XX_BLACK);
+
+    // On rising transition
+    if (currentState) {
+      //tft.fillScreen(ST77XX_BLACK);
       tft.setCursor(0, 0);
       tft.println("Motion ");
       tft.print("Detected!");
-      delay(2000);
-      change = false;
+      delay(1000);
+      //change = false;
     }
 
-    if (!change) {
-      tft.fillScreen(ST77XX_BLACK);
+    // Clear the screen.
+    tft.fillScreen(ST77XX_BLACK);
+    
+    // On falling transition
+    if (!currentState) {
+      //tft.fillScreen(ST77XX_BLACK);
       tft.setCursor(0, 0);
       tft.println("No");
       tft.print("Motion...");
       //change = false;
     }
-    event = false;
   }
 }
 //----{ISR}------------------------------------------------------//
 
 void isr_change() {
 
-  event = true;
-  change = true;
+  // Read the state of the pin to see if we have rising or falling transition.
+  currentState = digitalRead(INTERRUPT_PIN);
 
 }
 
