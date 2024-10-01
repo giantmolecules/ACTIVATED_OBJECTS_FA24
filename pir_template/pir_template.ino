@@ -7,7 +7,7 @@
 // pir_template.ino
 //
 // Demonstrates the use of a passive infrared sensor (PIR). Uses
-// interrupts. Uses board version 2.0.14 and GFX version 1.11.10
+// interrupts. Uses board version 2.0.14 and GFX version 1.11.0
 //
 //----------------------------------------------------------------//
 
