@@ -119,7 +119,7 @@ void loop() {
   
   delay(100);
 
-pos = map(distanceCm, 0, 100, 0, 180);
+pos = map(distanceCm, 0, 20, 0, 180);
 myservo.write(pos);
 
 }
