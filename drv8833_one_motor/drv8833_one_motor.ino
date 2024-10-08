@@ -68,10 +68,7 @@ void setup() {
   analogWriteFrequency(freq);
 
   // You might have to use this if you get an error:
-  // analogWriteResolution(IN1, resolution);
-  // analogWriteFrequency(IN1, freq);
-  // analogWriteResolution(IN2, resolution);
-  // analogWriteFrequency(IN2, freq);
+  // Make sure ESP32 by Espressif version is 2.0.14!
 
   // Set pin modes
   pinMode(IN1, OUTPUT);
