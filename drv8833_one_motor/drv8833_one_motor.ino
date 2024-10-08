@@ -67,6 +67,12 @@ void setup() {
   analogWriteResolution(resolution);
   analogWriteFrequency(freq);
 
+  // You might have to use this if you get an error:
+  // analogWriteResolution(IN1, resolution);
+  // analogWriteFrequency(IN1, freq);
+  // analogWriteResolution(IN2, resolution);
+  // analogWriteFrequency(IN2, freq);
+
   // Set pin modes
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
