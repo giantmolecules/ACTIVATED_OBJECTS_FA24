@@ -16,6 +16,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
 
+#define PWM_PIN 5
+
 // Create a TFT object
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
@@ -53,10 +55,11 @@ void setup() {
   // default text size
   tft.setTextSize(3);
 
+  // set wrap off
+  tft.setTextWrap(false);
+
   // set text foreground and background colors
   tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
-
-  Serial.println(F("TFT Initialized"));
 
 }
 
@@ -64,23 +67,14 @@ void setup() {
 
 void loop() {
 
-  // Fade In
-  for (int i = 0; i < 1024; i++) {
-    analogWrite(PWM_PIN, i);
-    tft.setCursor(0, 0);
-    tft.print(i);
-    tft.print("    ");
-    delay(20);
-  }
-
-  //Fade Out
-  for (int i = 1024; i > 0; i--) {
-    analogWrite(PWM_PIN, i);
-    tft.setCursor(0, 0);
-    tft.print(i);
-    tft.print("    ");
-    delay(20);
-  }
+analogWrite(PWM_PIN, 100);
+tft.setCursor(0,0);
+tft.print("ON: 100 ");
+delay(500);
+analogWrite(PWM_PIN, 0);
+tft.setCursor(0,0);
+tft.print("OFF: 0 ");
+delay(2000);
 
 }
 
