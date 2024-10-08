@@ -8,6 +8,7 @@
 //
 // Demonstrates driving a DC gearmotor
 // Uses PWM to vary speed.
+// Use 2.0.14 version of ESP32 board!
 //
 //----------------------------------------------------------------//
 
