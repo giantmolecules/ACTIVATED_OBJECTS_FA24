@@ -4,7 +4,7 @@
 // Brett Ian Balogh
 // https://github.com/giantmolecules/ACTIVATED_OBJECTS_FA24
 //
-// dc_motor_transistor_2n2222a.ino
+// dc_motor_transistor_tip122.ino
 //
 // Shows how to turn motor on/of
 //
@@ -54,6 +54,7 @@ void setup() {
 
   // Set pin mode to putput
   pinMode(MOTOR_PIN, OUTPUT);
+
 }
 
 //----{LOOP}------------------------------------------------------//
