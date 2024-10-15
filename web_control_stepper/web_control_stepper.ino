@@ -43,8 +43,8 @@ const int stepsPerRevolution = 2048;
 Stepper myStepper(stepsPerRevolution, IN1, IN2, IN3, IN4);
 
 // Replace with your network credentials
-const char* ssid = "SONGBIRD";
-const char* password = "quietcartoon195";
+const char* ssid = "SAIC-Guest";
+const char* password = "wifi@saic";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);

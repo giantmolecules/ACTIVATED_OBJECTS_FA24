@@ -35,8 +35,8 @@ int servoPin = 12;  // GPIO pin used to connect the servo control (digital out)
 int pos = 0;
 
 // Replace with your network credentials
-const char* ssid = "SONGBIRD";
-const char* password = "quietcartoon195";
+const char* ssid = "SAIC-Guest";
+const char* password = "wifi@saic";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
