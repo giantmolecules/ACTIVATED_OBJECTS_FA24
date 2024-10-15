@@ -18,8 +18,8 @@
 #include <Stepper.h>
 
 // Define names for pins
-#define IN1 5  // Orange
-#define IN2 6 // Purple
+#define IN1 5  // Purple
+#define IN2 6 // Orange
 #define IN3 9 // Yellow
 #define IN4 10 // Blue
 
