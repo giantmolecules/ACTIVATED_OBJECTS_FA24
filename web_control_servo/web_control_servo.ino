@@ -4,9 +4,10 @@
 // Brett Ian Balogh
 // https://github.com/giantmolecules/ACTIVATED_OBJECTS_FA24
 //
-// tft_template.ino
+// web_control_servo.ino
 //
-// This is a template for our code that readies the TFT for use.
+// Shoes how to serve a webpage from the ESP32 with a form that 
+// controls the position of a servo motor.
 //
 //----------------------------------------------------------------//
 

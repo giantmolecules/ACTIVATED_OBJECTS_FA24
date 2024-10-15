@@ -4,9 +4,11 @@
 // Brett Ian Balogh
 // https://github.com/giantmolecules/ACTIVATED_OBJECTS_FA24
 //
-// tft_template.ino
+// web_control_stepper.ino
 //
-// This is a template for our code that readies the TFT for use.
+// Shows how to serve a webpage from ESP32 with a form that controls
+// the position of a stepper motor. Uses regular stepper library and 
+// a DRV8833 motor controller.
 //
 //----------------------------------------------------------------//
 
