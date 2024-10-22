@@ -24,7 +24,7 @@ Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 void setup() {
 
   // Start Serial COM
-  Serial.begin(115200);
+  Serial.begin(9600);
   
   // turn on backlite
   pinMode(TFT_BACKLITE, OUTPUT);
