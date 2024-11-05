@@ -19,6 +19,17 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
+#include <Adafruit_NeoPixel.h>
+#include "images.h"
+
+// Which pin are the neopixels connected to
+#define LED_PIN 5
+
+// How many neopixels are there?
+#define LED_COUNT 256
+
+// Create neopixel strip.
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Create a TFT object
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
@@ -72,10 +83,22 @@ int interval = 3600000;  //1 hour
 void setup() {
 
   Serial.begin(115200);
-  // Serial.setDebugOutput(true);
-  Serial.println();
-  Serial.println();
-  Serial.println();
+
+  // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.begin();
+
+  // Turn OFF all pixels ASAP
+  strip.show();
+
+  // Set BRIGHTNESS to 10 (max = 255)
+  strip.setBrightness(10);
+  strip.fill(0xffff00);
+  strip.show();
+  delay(3000);
+  for(int i = 0; i <256; i++){
+    strip.setPixelColor(i, cloud[i]);
+  }
+  strip.show();
 
   WiFi.mode(WIFI_STA);
 
@@ -119,6 +142,22 @@ void setup() {
   tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
 
   Serial.println(F("TFT Initialized"));
+
+    // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.begin();
+
+  // Turn OFF all pixels ASAP
+  strip.show();
+
+  // Set BRIGHTNESS to 10 (max = 255)
+  strip.setBrightness(10);
+  strip.fill(0xffff00);
+  strip.show();
+  delay(3000);
+  for(int i = 0; i <256; i++){
+    strip.setPixelColor(i, drop[i]);
+  }
+  strip.show();
 }
 
 void loop() {
@@ -126,7 +165,7 @@ void loop() {
   if (millis() - pastPrintTime > printInterval) {
     tft.fillScreen(ST77XX_BLACK);
     tft.setCursor(0, 0);
-    tft.setTextSize(2);
+    tft.setTextSize(3);
     tft.println(setClock());
     tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
     tft.print(forecast);
