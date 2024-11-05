@@ -1,21 +1,12 @@
 //----------------------------------------------------------------//
 //
-// SAIC Biological Communications Spring 2024
+// SAIC Tactical Media Fall 2024
 // Brett Ian Balogh
+// https://github.com/giantmolecules/TACTICAL_MEDIA_FA24
 //
-// NWS_forecast_pittsburgh_v1.ino
+// NWS_forecast_Chicago.ino
 //
-// This sketch gets the current chance of precipitation in Pittsburgh
-//
-// How it works:
-//
-// Once an hour, check the NWS site for the current precipitation probability.
-// if the chance exceeds precipThreshold, state variable raining is true. If the
-// probability goes below precipThreshold, raining is false. If raining is true,
-// enter a state controlled by rain that rains for a random interval between rainDurationMin
-// rainDurationMax. When rain stops, wait for a time controlled by rainPause that is
-// between rainPauseMin and rainPauseMax. Continue raining and pausing until
-// probability is below precipThreshold.
+// Uses NWS API to get weather conditions.
 //
 //----------------------------------------------------------------//
 
