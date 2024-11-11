@@ -90,15 +90,22 @@ void setup() {
   // Turn OFF all pixels ASAP
   strip.show();
 
+  /************************************************/
+
+  // This section is a test display of a converted BMP on the Neopixel Panel.
+
   // Set BRIGHTNESS to 10 (max = 255)
   strip.setBrightness(10);
-  strip.fill(0xffff00);
-  strip.show();
-  delay(3000);
-  for(int i = 0; i <256; i++){
+  // Loop through all pixels, grabbing the color from the array in the images.h file.
+  for (int i = 0; i < 256; i++) {
+    // cloud[i] represents a pixel in the array. cloud[0] is the first pixel and cloud[255] is the last.
     strip.setPixelColor(i, cloud[i]);
   }
+  // Display the image
   strip.show();
+
+  /************************************************/
+
 
   WiFi.mode(WIFI_STA);
 
@@ -107,7 +114,7 @@ void setup() {
   // Change for your wifi credentials
 
   WiFiMulti.addAP("SAIC-Guest", "wifi@saic");
-  
+
 
   /************************************************/
 
@@ -143,7 +150,7 @@ void setup() {
 
   Serial.println(F("TFT Initialized"));
 
-    // INITIALIZE NeoPixel strip object (REQUIRED)
+  // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.begin();
 
   // Turn OFF all pixels ASAP
@@ -154,7 +161,7 @@ void setup() {
   strip.fill(0xffff00);
   strip.show();
   delay(3000);
-  for(int i = 0; i <256; i++){
+  for (int i = 0; i < 256; i++) {
     strip.setPixelColor(i, drop[i]);
   }
   strip.show();
@@ -199,41 +206,40 @@ void loop() {
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
               String jsonString = https.getString();
               myObject = JSON.parse(jsonString);
-                Serial.print("Output: ");
-                Serial.println(myObject["properties"]["periods"][0]["shortForecast"]);
-                forecast = JSON.stringify(myObject["properties"]["periods"][0]["shortForecast"]);
-              }
-            } else {
-              Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
-              errorCounter++;
-
-              // if we get too many connection errors, restart the ESP
-
-              if (errorCounter >= 3) {
-                ESP.restart();
-              }
+              Serial.print("Output: ");
+              Serial.println(myObject["properties"]["periods"][0]["shortForecast"]);
+              forecast = JSON.stringify(myObject["properties"]["periods"][0]["shortForecast"]);
             }
-
-            https.end();
           } else {
-            Serial.printf("[HTTPS] Unable to connect\n");
+            Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+            errorCounter++;
+
+            // if we get too many connection errors, restart the ESP
+
+            if (errorCounter >= 3) {
+              ESP.restart();
+            }
           }
 
-          // End extra scoping block
+          https.end();
+        } else {
+          Serial.printf("[HTTPS] Unable to connect\n");
         }
 
-        delete client;
-      }
-      else {
-        Serial.println("Unable to create client");
+        // End extra scoping block
       }
 
-      Serial.println();
-      Serial.println("Waiting 1h before the next round...");
-      //delay(90000);
-      if (firstTime) {
-        firstTime = 0;
-      }
-      timeThen = millis();
+      delete client;
+    } else {
+      Serial.println("Unable to create client");
     }
+
+    Serial.println();
+    Serial.println("Waiting 1h before the next round...");
+    //delay(90000);
+    if (firstTime) {
+      firstTime = 0;
+    }
+    timeThen = millis();
   }
+}
