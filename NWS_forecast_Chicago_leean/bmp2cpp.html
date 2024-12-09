@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMP to C Array Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BMP to C Array Converter</h1>
+        <p>Upload a 16-bit RGB565 BMP image to convert it into a C-style array:</p>
+        <form id="uploadForm">
+            <input type="file" id="bmpFile" accept=".bmp" required>
+            <br>
+            <button type="submit" class="btn">Convert</button>
+        </form>
+        <a id="downloadLink" class="btn hidden">Download Array</a>
+        <pre id="output" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('bmpFile');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const arrayBuffer = e.target.result;
+                const bytes = new Uint8Array(arrayBuffer);
+
+                const headerSize = 14; // BMP file header size
+                const dibHeaderSize = bytes[14];
+
+                if (bytes[28] !== 16) {
+                    alert('Only 16-bit RGB565 BMP files are supported.');
+                    return;
+                }
+
+                const pixelArrayOffset = bytes[10] | (bytes[11] << 8) | (bytes[12] << 16) | (bytes[13] << 24);
+                const width = bytes[18] | (bytes[19] << 8);
+                const height = bytes[22] | (bytes[23] << 8);
+                const rowSize = Math.ceil(width * 2 / 4) * 4;
+
+                let cArray = `const uint16_t image_data[] = {\n`;
+                for (let y = height - 1; y >= 0; y--) {
+                    for (let x = 0; x < width; x++) {
+                        const offset = pixelArrayOffset + y * rowSize + x * 2;
+                        const pixel = bytes[offset] | (bytes[offset + 1] << 8);
+                        cArray += `0x${pixel.toString(16).toUpperCase().padStart(4, '0')}, `;
+                    }
+                    cArray += '\n';
+                }
+                cArray = cArray.trim().replace(/, \n$/, '\n') + '\n};';
+
+                // Display in the output section
+                document.getElementById('output').textContent = cArray;
+
+                // Prepare for download
+                const blob = new Blob([cArray], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.download = 'image_array.h';
+                downloadLink.classList.remove('hidden');
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
+</body>
+</html>

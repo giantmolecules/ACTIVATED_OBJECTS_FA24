@@ -19,20 +19,32 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
-#include <Adafruit_NeoPixel.h>
+#include <Adafruit_Protomatter.h>
+#include <SPIFFS_ImageReader.h>
 #include "images.h"
-
-// Which pin are the neopixels connected to
-#define LED_PIN 5
-
-// How many neopixels are there?
-#define LED_COUNT 256
-
-// Create neopixel strip.
-Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 // Create a TFT object
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+/* ----------------------------------------------------------------------
+  The RGB matrix must be wired to VERY SPECIFIC pins, different for each
+  microcontroller board. This first section sets that up for a number of
+  supported boards. Notes have been moved to the bottom of the code.
+  ------------------------------------------------------------------------- */
+
+uint8_t rgbPins[] = { 6, 5, 9, 11, 10, 12 };
+uint8_t addrPins[] = { A5, A4, A3, A2 };
+uint8_t clockPin = 13;  // Must be on same port as rgbPins
+uint8_t latchPin = RX;
+uint8_t oePin = TX;
+
+Adafruit_Protomatter matrix(
+  64,                         // Width of matrix (or matrix chain) in pixels
+  4,                          // Bit depth, 1-6
+  1, rgbPins,                 // # of matrix chains, array of 6 RGB pins for each
+  4, addrPins,                // # of address pins (height is inferred), array of pins
+  clockPin, latchPin, oePin,  // Other matrix control pins
+  false);                     // No double-buffering here (see "doublebuffer" example)
 
 // Not sure if WiFiClientSecure checks the validity date of the certificate.
 // Setting clock just to be sure...
@@ -65,11 +77,15 @@ int timeNow = 0;
 int timeThen = 0;
 int errorCounter = 0;
 boolean firstTime = 1;
-boolean raining = 0;
-boolean rain = 0;
-int pastRainTime = 0;
 int pastPrintTime = 0;
 int printInterval = 5000;
+String condition = "";
+
+/************************************************/
+
+// Keywords to search for in forecast
+
+String keywords[] = {"Sun", "Cloud", "Rain", "Wind", "Clear"};
 
 /************************************************/
 
@@ -84,28 +100,7 @@ void setup() {
 
   Serial.begin(115200);
 
-  // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.begin();
-
-  // Turn OFF all pixels ASAP
-  strip.show();
-
   /************************************************/
-
-  // This section is a test display of a converted BMP on the Neopixel Panel.
-
-  // Set BRIGHTNESS to 10 (max = 255)
-  strip.setBrightness(10);
-  // Loop through all pixels, grabbing the color from the array in the images.h file.
-  for (int i = 0; i < 256; i++) {
-    // cloud[i] represents a pixel in the array. cloud[0] is the first pixel and cloud[255] is the last.
-    strip.setPixelColor(i, cloud[i]);
-  }
-  // Display the image
-  strip.show();
-
-  /************************************************/
-
 
   WiFi.mode(WIFI_STA);
 
@@ -113,8 +108,9 @@ void setup() {
 
   // Change for your wifi credentials
 
-  WiFiMulti.addAP("SAIC-Guest", "wifi@saic");
+  //WiFiMulti.addAP("SAIC-Guest", "wifi@saic");
 
+  WiFiMulti.addAP("SONGBIRD", "quietcartoon195");
 
   /************************************************/
 
@@ -143,28 +139,23 @@ void setup() {
   tft.fillScreen(ST77XX_BLACK);
 
   // default text size
-  tft.setTextSize(12);
+  tft.setTextSize(2);
 
   // set text foreground and background colors
   tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
 
   Serial.println(F("TFT Initialized"));
 
-  // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.begin();
-
-  // Turn OFF all pixels ASAP
-  strip.show();
-
-  // Set BRIGHTNESS to 10 (max = 255)
-  strip.setBrightness(10);
-  strip.fill(0xffff00);
-  strip.show();
-  delay(3000);
-  for (int i = 0; i < 256; i++) {
-    strip.setPixelColor(i, drop[i]);
+  // Initialize matrix...
+  ProtomatterStatus status = matrix.begin();
+  Serial.print("Protomatter begin() status: ");
+  Serial.println((int)status);
+  if (status != PROTOMATTER_OK) {
+    // DO NOT CONTINUE if matrix setup encountered an error.
+    for (;;)
+      ;
   }
-  strip.show();
+
 }
 
 void loop() {
@@ -174,7 +165,7 @@ void loop() {
     tft.setCursor(0, 0);
     tft.setTextSize(3);
     tft.println(setClock());
-    tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
+    tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
     tft.print(forecast);
     tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
     pastPrintTime = millis();
@@ -212,6 +203,8 @@ void loop() {
               Serial.print("Output: ");
               Serial.println(myObject["properties"]["periods"][0]["shortForecast"]);
               forecast = JSON.stringify(myObject["properties"]["periods"][0]["shortForecast"]);
+              //forecast = "Sunny";
+              processForecast(forecast);
             }
           } else {
             Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
@@ -244,5 +237,42 @@ void loop() {
       firstTime = 0;
     }
     timeThen = millis();
+  }
+}
+
+/* This function displays an image based on the forecast. It takes the actual forecast
+   and compares it to a list of keywords such as sunny, cloudy, etc. If the keyword is found in
+   the forecast string, an image is displayed.
+*/
+
+void processForecast(String fcast) {
+
+  for (int j = 0; j < 5; j++) {
+
+    
+    // The following looks for the keyword in the forecast. If it isn't there, it returns -1
+    // Otherwise, it returns the position in the string.
+    int result = fcast.indexOf(keywords[j]);
+
+    if (result > -1) {
+      condition = keywords[j];
+      Serial.print("Forecast: ");
+      Serial.print(fcast);
+      Serial.print("     ");
+      Serial.print("Condition: ");
+      Serial.println(condition);
+      if (j == 0) {
+        matrix.drawRGBBitmap(0, 0, sun, 64, 32);
+        matrix.show();  // Copy data to matrix buffers
+      }
+      if (j == 1) {
+        matrix.drawRGBBitmap(0, 0, cloud, 64, 32);
+        matrix.show();  // Copy data to matrix buffers
+      }
+      if (j == 2) {
+        matrix.drawRGBBitmap(0, 0, rain, 64, 32);
+        matrix.show();  // Copy data to matrix buffers
+      }
+    }
   }
 }
