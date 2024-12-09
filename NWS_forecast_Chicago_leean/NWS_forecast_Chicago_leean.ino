@@ -162,12 +162,14 @@ void loop() {
   // Print to TFT
   if (millis() - pastPrintTime > printInterval) {
     tft.fillScreen(ST77XX_BLACK);
+    tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
     tft.setCursor(0, 0);
     tft.setTextSize(3);
     tft.println(setClock());
-    tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+    tft.setTextSize(2);
+    tft.println("Forecast: ");
     tft.print(forecast);
-    tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+    
     pastPrintTime = millis();
   }
 
